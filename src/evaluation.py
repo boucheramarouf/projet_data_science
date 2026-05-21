@@ -205,8 +205,12 @@ def compute_shap_values(model, X_train, X_test, model_name: str, feature_names: 
     if clf_name in tree_models:
         explainer = shap.TreeExplainer(clf)
         shap_vals = explainer.shap_values(X_test_t)
+        # Older SHAP: list [class0, class1] → take class 1
         if isinstance(shap_vals, list) and len(shap_vals) == 2:
             shap_vals = shap_vals[1]
+        # Newer SHAP: 3-D array (n_samples, n_features, n_classes) → take class 1
+        elif isinstance(shap_vals, np.ndarray) and shap_vals.ndim == 3:
+            shap_vals = shap_vals[:, :, 1]
     else:
         np.random.seed(42)
         n_bg = min(100, len(X_train_t))
@@ -248,6 +252,65 @@ def plot_shap_summary(shap_vals, X_test_t, feature_names: list, model_name: str,
 
 
 def get_top_shap_features(shap_vals, feature_names: list, top_n: int = 20) -> pd.DataFrame:
-    mean_abs = np.abs(shap_vals).mean(axis=0)
-    df = pd.DataFrame({"feature": feature_names[:len(mean_abs)], "mean_abs_shap": mean_abs})
+    sv = np.array(shap_vals)
+    # 3D array (n_samples, n_features, n_classes) → class 1
+    if sv.ndim == 3:
+        sv = sv[:, :, 1]
+    mean_abs = np.abs(sv).mean(axis=0).ravel()
+    df = pd.DataFrame({"feature": list(feature_names)[:len(mean_abs)], "mean_abs_shap": mean_abs})
     return df.sort_values("mean_abs_shap", ascending=False).head(top_n).reset_index(drop=True)
+
+
+# ---------------------------------------------------------------------------
+# Cross-validation
+# ---------------------------------------------------------------------------
+
+def quick_cv(model, X, y, cv: int = 5, random_state: int = 42,
+             use_sample_weight: bool = False) -> dict:
+    """
+    StratifiedKFold cross-validation for one sklearn Pipeline.
+    Returns mean ± std of F1, Recall, ROC-AUC, PR-AUC (all on the minority class).
+    use_sample_weight: if True, inject clf__sample_weight at each fold (for MLP).
+    """
+    from sklearn.model_selection import StratifiedKFold
+    from sklearn.base import clone
+
+    skf = StratifiedKFold(n_splits=cv, shuffle=True, random_state=random_state)
+    f1s, recs, rocs, praucs = [], [], [], []
+
+    X_arr = X.values if hasattr(X, "values") else np.array(X)
+    y_arr = y.values if hasattr(y, "values") else np.array(y)
+
+    for tr_idx, val_idx in skf.split(X_arr, y_arr):
+        X_tr, X_val = X_arr[tr_idx], X_arr[val_idx]
+        y_tr, y_val = y_arr[tr_idx], y_arr[val_idx]
+
+        m = clone(model)
+        if use_sample_weight:
+            n_neg = (y_tr == 0).sum()
+            n_pos = (y_tr == 1).sum()
+            total = len(y_tr)
+            w = np.where(y_tr == 1, total / (2.0 * n_pos), total / (2.0 * n_neg))
+            m.fit(X_tr, y_tr, clf__sample_weight=w)
+        else:
+            m.fit(X_tr, y_tr)
+
+        y_prob = m.predict_proba(X_val)[:, 1]
+        thresh = find_best_threshold(y_val, y_prob, metric="f1")
+        y_pred = (y_prob >= thresh).astype(int)
+
+        f1s.append(f1_score(y_val, y_pred, pos_label=1, zero_division=0))
+        recs.append(recall_score(y_val, y_pred, pos_label=1, zero_division=0))
+        rocs.append(roc_auc_score(y_val, y_prob))
+        praucs.append(average_precision_score(y_val, y_prob))
+
+    return {
+        "f1_mean":       round(float(np.mean(f1s)), 4),
+        "f1_std":        round(float(np.std(f1s)), 4),
+        "recall_mean":   round(float(np.mean(recs)), 4),
+        "recall_std":    round(float(np.std(recs)), 4),
+        "roc_auc_mean":  round(float(np.mean(rocs)), 4),
+        "roc_auc_std":   round(float(np.std(rocs)), 4),
+        "pr_auc_mean":   round(float(np.mean(praucs)), 4),
+        "pr_auc_std":    round(float(np.std(praucs)), 4),
+    }

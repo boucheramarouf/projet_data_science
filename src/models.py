@@ -103,12 +103,6 @@ def build_svm(C: float = 0.1, random_state: int = 42) -> Pipeline:
     return Pipeline(_base_steps() + [("clf", calibrated)])
 
 
-# ---------------------------------------------------------------------------
-# MLP (Deep Learning) — sklearn MLPClassifier wrapped in a pipeline
-# Architecture: 3 hidden layers (256-128-64), same depth as a typical DNN.
-# sklearn's MLPClassifier implements a true multi-layer perceptron with
-# backpropagation, making it a valid Deep Learning model for this use case.
-# ---------------------------------------------------------------------------
 
 def build_mlp(
     hidden_layer_sizes: tuple = (256, 128, 64),

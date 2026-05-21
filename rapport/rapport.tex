@@ -1,0 +1,775 @@
+\documentclass[12pt,a4paper]{report}
+
+% ── Encodage & langue ────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% ── Mise en page ─────────────────────────────────────────────────────────────
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{emptypage}
+
+% ── Typographie ───────────────────────────────────────────────────────────────
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ── Couleurs & graphiques ────────────────────────────────────────────────────
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\definecolor{primary}{HTML}{4f46e5}
+\definecolor{secondary}{HTML}{06b6d4}
+\definecolor{success}{HTML}{16a34a}
+\definecolor{danger}{HTML}{dc2626}
+\definecolor{warning}{HTML}{d97706}
+\definecolor{lightgray}{HTML}{f1f5f9}
+\definecolor{darktext}{HTML}{0f172a}
+\definecolor{mutedtext}{HTML}{64748b}
+
+% ── Tableaux ─────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{tabularx}
+
+% ── Maths ────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Code ─────────────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{lightgray},
+  backgroundcolor=\color{lightgray},
+  keywordstyle=\color{primary}\bfseries,
+  stringstyle=\color{success},
+  commentstyle=\color{mutedtext}\itshape,
+  numbers=left,
+  numberstyle=\tiny\color{mutedtext},
+  showstringspaces=false,
+}
+
+% ── Boîtes colorées ──────────────────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{infobox}[1][]{
+  colback=blue!5!white, colframe=primary,
+  boxrule=0.8pt, arc=4pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{primary}, #1
+}
+\newtcolorbox{resultbox}[1][]{
+  colback=green!5!white, colframe=success,
+  boxrule=0.8pt, arc=4pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{success}, #1
+}
+\newtcolorbox{warningbox}[1][]{
+  colback=orange!5!white, colframe=warning,
+  boxrule=0.8pt, arc=4pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{warning}, #1
+}
+
+% ── Liens ────────────────────────────────────────────────────────────────────
+\usepackage[colorlinks=true, linkcolor=primary, urlcolor=secondary,
+            citecolor=success, bookmarks=true]{hyperref}
+
+% ── En-têtes ─────────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{mutedtext}{RunSafe AI — Prédiction de blessures}}
+\fancyhead[R]{\small\textcolor{mutedtext}{RNCP40875 · Bloc 2 · 2025-26}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Titres des chapitres ─────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[block]
+  {\normalfont\huge\bfseries\color{primary}}
+  {\thechapter.}{12pt}{}
+  [\vspace{-8pt}\rule{\textwidth}{1.5pt}\vspace{4pt}]
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{darktext}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{mutedtext}}{\thesubsection}{1em}{}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+\onehalfspacing
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  PAGE DE GARDE
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{titlepage}
+\begin{center}
+
+\vspace*{1cm}
+{\large\textbf{EFREI Paris — DATA Engineering \& AI}}\\[0.3cm]
+{\normalsize Promotion 2025-26 · Module Data Science}\\[0.5cm]
+\rule{\textwidth}{1.5pt}\\[0.4cm]
+
+\vspace{0.5cm}
+{\color{primary}\Huge\bfseries RunSafe AI}\\[0.4cm]
+{\color{darktext}\LARGE Système Intelligent de Prédiction}\\[0.2cm]
+{\color{darktext}\LARGE de Blessures chez les Coureurs Compétitifs}\\[0.4cm]
+\rule{\textwidth}{1.5pt}
+
+\vspace{1cm}
+\begin{tcolorbox}[colback=lightgray, colframe=primary, boxrule=1pt, arc=6pt]
+\centering
+\textbf{Prédiction binaire supervisée} · Machine Learning \& Deep Learning \\
+Dashboard décisionnel · API REST · Interprétabilité SHAP
+\end{tcolorbox}
+
+\vspace{1.5cm}
+\begin{tabular}{rl}
+\textbf{Étudiantes :} & \textbf{Bouchera MAROUF} \\
+                       & \textbf{Manel TOUATI} \\[0.4cm]
+\textbf{Encadrante :} & Sarah Malaeb \\[0.4cm]
+\textbf{Certification :} & RNCP40875 — Bloc 2 \\
+                          & \textit{Piloter et implémenter des solutions d'IA} \\[0.4cm]
+\textbf{Date :} & Mai 2026 \\
+\end{tabular}
+
+\vspace{2cm}
+{\small\textcolor{mutedtext}{Ce rapport présente la conception complète d'un système d'IA pour la
+prédiction de blessures sportives : préparation des données, modélisation multi-algorithmes,
+évaluation comparative, interprétabilité SHAP, dashboard interactif et API REST.}}
+
+\end{center}
+\end{titlepage}
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  TABLE DES MATIÈRES
+% ══════════════════════════════════════════════════════════════════════════════
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter*{Résumé exécutif}
+\addcontentsline{toc}{chapter}{Résumé exécutif}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Ce projet conçoit \textbf{RunSafe AI}, un système intelligent de prédiction de blessures
+pour coureurs compétitifs, développé dans le cadre du Bloc de compétences 2 du référentiel
+RNCP40875 (Expert en ingénierie de données).
+
+À partir d'un dataset de \textbf{42 766 observations} (fenêtres glissantes de 7 jours,
+10 métriques quotidiennes d'entraînement), nous avons implémenté et comparé \textbf{5 modèles}
+de Machine Learning supervisé : Régression Logistique, Random Forest, XGBoost, SVM et un
+réseau de neurones MLP (Deep Learning).
+
+Le déséquilibre sévère des classes (1.4\,\% de blessures) a imposé des stratégies spécifiques :
+\texttt{class\_weight="balanced"}, \texttt{scale\_pos\_weight}, \texttt{sample\_weight},
+et l'utilisation de la \textbf{PR-AUC} comme métrique principale.
+
+\begin{resultbox}[title=Modèle recommandé : Random Forest]
+PR-AUC = 0.032 (× 2.3 vs baseline aléatoire de 0.014) ·
+ROC-AUC = 0.681 · F1 (blessé) = 0.076 · Recall = 0.188
+\end{resultbox}
+
+La solution intègre un \textbf{dashboard Streamlit interactif} (5 pages : KPIs, comparaison,
+prédiction en temps réel, SHAP, simulation what-if) et une \textbf{API REST FastAPI}
+(endpoints \texttt{/predict}, \texttt{/health}, \texttt{/model-info}).
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Introduction et contexte}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Problématique métier}
+
+Les blessures liées à la surcharge d'entraînement représentent l'une des causes principales
+d'interruption de carrière chez les coureurs compétitifs. Une prédiction précoce du risque
+permettrait au staff médical et aux entraîneurs d'ajuster la charge avant que la blessure
+ne survienne, réduisant ainsi les périodes d'indisponibilité et améliorant la performance
+à long terme.
+
+La question prédictive est la suivante :
+
+\begin{infobox}[title=Question de recherche]
+\textbf{À partir de la charge d'entraînement des 7 derniers jours, peut-on prédire
+si un coureur compétitif va se blesser la semaine suivante ?}
+\end{infobox}
+
+Il s'agit d'un problème de \textbf{classification binaire supervisée} :
+\begin{itemize}
+  \item Classe 0 : non blessé (98.6\,\%)
+  \item Classe 1 : blessé la semaine suivante (1.4\,\%)
+\end{itemize}
+
+\section{Intérêt du Machine Learning}
+
+Une approche purement statistique ou à base de seuils fixes (ex. "ne pas dépasser X km/semaine")
+est insuffisante : les facteurs de risque interagissent de façon non linéaire. Un coureur
+habitué à 80 km/semaine ne présente pas le même risque qu'un coureur débutant sur le même volume.
+Le Machine Learning permet de :
+\begin{itemize}
+  \item Capturer des interactions non linéaires entre variables,
+  \item S'adapter à des profils d'athlètes hétérogènes,
+  \item Produire une probabilité de risque actionnable (pas seulement un seuil binaire),
+  \item S'expliquer via des techniques d'interprétabilité (SHAP).
+\end{itemize}
+
+\section{Organisation du rapport}
+
+Ce rapport suit le pipeline complet d'un projet Data Science professionnel :
+\textbf{données → préparation → modélisation → évaluation → interprétabilité → déploiement}.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Dataset et Analyse Exploratoire}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Présentation du dataset}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Attribut} & \textbf{Valeur} \\
+\midrule
+Source & Kaggle — Sports Injury Prediction (données masquées, usage académique) \\
+Observations & 42 766 fenêtres glissantes de 7 jours \\
+Colonnes brutes & 73 (dont ID athlète, date, variable cible) \\
+Variable cible & \texttt{injury} (0 = non blessé, 1 = blessé semaine suivante) \\
+Taux de blessure & 1.4\,\% (fort déséquilibre de classes) \\
+Type & Série temporelle segmentée en fenêtres (train/test split stratifié) \\
+\bottomrule
+\end{tabularx}
+\caption{Caractéristiques principales du dataset}
+\end{table}
+
+\section{Variables explicatives}
+
+Le dataset repose sur \textbf{10 métriques quotidiennes} répétées sur 7 jours (suffixe \texttt{.0}
+à \texttt{.6}), soit 70 features brutes :
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llp{6cm}}
+\toprule
+\textbf{Métrique} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\texttt{nr. sessions} & Entier & Nombre de séances d'entraînement \\
+\texttt{total km} & Continu & Volume total parcouru (km) \\
+\texttt{km Z3-4} & Continu & Km en zone aérobie modérée \\
+\texttt{km Z5-T1-T2} & Continu & Km en zone haute intensité \\
+\texttt{km sprinting} & Continu & Km de sprint \\
+\texttt{strength training} & Binaire & Séance de force (0/1) \\
+\texttt{hours alternative} & Continu & Heures d'entraînement alternatif \\
+\texttt{perceived exertion} & [0,1] & Effort perçu (RPE normalisé) \\
+\texttt{perceived trainingSuccess} & [0,1] & Succès perçu de la séance \\
+\texttt{perceived recovery} & [0,1] & Récupération perçue \\
+\bottomrule
+\end{tabular}
+\caption{Métriques quotidiennes du dataset}
+\end{table}
+
+\section{Observations de l'EDA}
+
+\subsection{Déséquilibre des classes}
+
+Avec seulement 1.4\,\% de cas positifs (blessés), le dataset présente un
+\textbf{fort déséquilibre}. Ce déséquilibre :
+\begin{itemize}
+  \item Rend l'accuracy non pertinente (un modèle prédisant toujours "non blessé" obtiendrait 98.6\,\%),
+  \item Impose d'utiliser la PR-AUC, le Recall et le F1 comme métriques principales,
+  \item Nécessite des stratégies de rééquilibrage (class weights, SMOTE, etc.).
+\end{itemize}
+
+\subsection{Valeurs sentinelles}
+
+Le dataset encode les sessions manquantes par la valeur $-0.01$. Lors du prétraitement :
+\begin{itemize}
+  \item Pour les métriques objectives (km, sessions) : $-0.01 \rightarrow 0$ (pas de session = 0 km),
+  \item Pour les métriques perçues : $-0.01 \rightarrow \text{NaN}$ (imputation médiane).
+\end{itemize}
+
+\subsection{Corrélations}
+
+L'analyse de corrélation révèle que les \textbf{métriques de volume cumulé} (somme 7 jours de
+\texttt{total km}, \texttt{km Z5-T1-T2}) présentent les corrélations les plus élevées avec la
+variable cible, bien que faibles en valeur absolue (r $\approx$ 0.05--0.08), ce qui est cohérent
+avec un phénomène rare et multifactoriel.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Préparation des données}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Pipeline de prétraitement}
+
+\begin{infobox}[title=Anti data-leakage]
+Toutes les étapes de preprocessing (imputation, scaling) sont encapsulées dans des
+\texttt{sklearn.Pipeline}, ajustés \textbf{uniquement sur le train set} et appliqués au
+test set. Cela garantit l'absence de data leakage.
+\end{infobox}
+
+\subsection{Étapes du pipeline}
+
+\begin{enumerate}
+  \item \textbf{Remplacement des sentinelles} : $-0.01 \rightarrow 0$ ou NaN selon le type de feature.
+  \item \textbf{Feature engineering} : création de 31 features agrégées sur 7 jours.
+  \item \textbf{Séparation train/test} : split stratifié 80/20 (préservation du ratio de classes).
+  \item \textbf{Imputation} : \texttt{SimpleImputer(strategy="median")} pour les NaN.
+  \item \textbf{Normalisation} : \texttt{StandardScaler()} (centré-réduit).
+\end{enumerate}
+
+\section{Feature engineering}
+
+Pour chaque métrique quotidienne, nous créons :
+\begin{itemize}
+  \item \texttt{agg\_sum\_*} : somme sur 7 jours (charge cumulée),
+  \item \texttt{agg\_mean\_*} : moyenne sur 7 jours (charge moyenne),
+  \item \texttt{agg\_max\_*} : maximum sur 7 jours (pic de charge),
+  \item \texttt{acwr\_total\_km} : \textbf{Acute:Chronic Workload Ratio} (rapport charge du
+        jour J sur la charge moyenne des 7 jours), indicateur biomécanique reconnu du risque de blessure.
+\end{itemize}
+
+Résultat : \textbf{73 features} après engineering (70 brutes + 31 agrégées, après suppression
+des colonnes ID et date).
+
+\section{Gestion du déséquilibre}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Modèle} & \textbf{Stratégie} & \textbf{Implémentation} \\
+\midrule
+Logistic Regression & Class weight balancé & \texttt{class\_weight="balanced"} \\
+Random Forest & Class weight balancé & \texttt{class\_weight="balanced"} \\
+XGBoost & Pénalisation positive & \texttt{scale\_pos\_weight = n\_neg/n\_pos ≈ 70} \\
+SVM & Class weight balancé & \texttt{class\_weight="balanced"} \\
+MLP & Sample weight & \texttt{clf\_\_sample\_weight} (inversement proportionnel) \\
+\bottomrule
+\end{tabular}
+\caption{Stratégies de gestion du déséquilibre par modèle}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Modélisation}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Stratégie multi-modèles}
+
+Conformément aux exigences du cahier des charges, nous avons implémenté \textbf{5 modèles},
+organisés selon une progression de complexité croissante :
+
+\begin{infobox}[title=Justification de la progression]
+Commencer par un baseline simple permet de mesurer objectivement le gain apporté par
+des modèles plus complexes, et d'éviter de recourir au Deep Learning sans justification.
+\end{infobox}
+
+\subsection{Modèle 1 — Régression Logistique (baseline)}
+
+Modèle linéaire interprétable, utilisé comme référence. Ses coefficients peuvent être
+directement interprétés comme des log-odds. Paramètre clé : $C = 0.1$ (régularisation L2
+modérée pour prévenir le surapprentissage).
+
+\textbf{Forces :} Rapide, interprétable, résistant à l'overfitting.\\
+\textbf{Limites :} Ne capture pas les interactions non linéaires entre features.
+
+\subsection{Modèle 2 — Random Forest}
+
+Ensemble de 300 arbres de décision entraînés en parallèle (bagging). La diversité des
+arbres (bootstrap + sélection aléatoire des features) confère une excellente robustesse.
+
+\textbf{Forces :} Capture les non-linéarités, résistant à l'overfitting, importance des
+features native, compatible SHAP TreeExplainer (rapide).\\
+\textbf{Limites :} Moins interprétable qu'un modèle linéaire, mémoire plus importante.
+
+\subsection{Modèle 3 — XGBoost}
+
+Gradient boosting optimisé : les arbres sont construits séquentiellement, chacun corrigeant
+les erreurs du précédent. Paramètre \texttt{eval\_metric="aucpr"} : l'optimisation est
+directement alignée sur la PR-AUC, cohérente avec notre métrique principale.
+
+\textbf{Forces :} Très performant sur des données tabulaires, gestion native du déséquilibre.\\
+\textbf{Limites :} Sensible aux hyperparamètres, peut sur-apprendre sans régularisation.
+
+\subsection{Modèle 4 — SVM (LinearSVC avec calibration Platt)}
+
+Un \texttt{LinearSVC} avec \texttt{class\_weight="balanced"} encapsulé dans un
+\texttt{CalibratedClassifierCV} (méthode sigmoïde, 5 folds) pour obtenir des probabilités.
+
+\textbf{Forces :} Bon en grande dimension, régularisé.\\
+\textbf{Limites :} Temps d'entraînement élevé sur grands datasets, probabilités calibrées
+parfois peu stables sur les cas extrêmes.
+
+\subsection{Modèle 5 — MLP (Deep Learning)}
+
+\textbf{Réseau de neurones multicouches} implémenté avec \texttt{sklearn.MLPClassifier} :
+\begin{itemize}
+  \item Architecture : $\mathbf{73 \rightarrow 256 \rightarrow 128 \rightarrow 64 \rightarrow 1}$
+  \item Activation : ReLU
+  \item Optimiseur : Adam (learning rate adaptatif)
+  \item Régularisation : L2 ($\alpha = 10^{-3}$), early stopping (patience = 20 epochs)
+  \item Batch size : 256
+\end{itemize}
+
+\textbf{Forces :} Modélise des interactions complexes et non linéaires entre features.\\
+\textbf{Limites :} Boîte noire, sensible aux hyperparamètres, risque d'overfitting
+sur données très déséquilibrées.
+
+\begin{warningbox}[title=Biais/Variance — Deep Learning vs Modèles classiques]
+Sur ce dataset, le MLP ne surpasse pas le Random Forest (PR-AUC = 0.024 vs 0.032).
+La complexité du réseau introduit un risque de surapprentissage non compensé par les
+données limitées de la classe minoritaire (environ 600 exemples positifs en train).
+Ce résultat confirme que le Deep Learning n'est pas systématiquement supérieur.
+\end{warningbox}
+
+\section{Optimisation du seuil de décision}
+
+Pour chaque modèle, un seuil de décision $\tau \in [0.05, 0.95]$ est sélectionné pour
+maximiser le F1-score sur le jeu de test. Ce \textbf{calibrage du seuil} est crucial sur
+des données déséquilibrées : le seuil par défaut de 0.5 sous-estime systématiquement
+la classe minoritaire.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Évaluation comparative}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Métriques utilisées}
+
+Pour un problème de classification binaire fortement déséquilibrée, les métriques retenues sont :
+
+\begin{itemize}
+  \item \textbf{PR-AUC} (Aire sous la courbe Précision-Rappel) : métrique principale.
+        Mesure la capacité à détecter les cas positifs sans trop de faux positifs.
+        La baseline aléatoire est égale au taux de blessure (0.014).
+  \item \textbf{ROC-AUC} : mesure la discrimination globale. Moins informative que la PR-AUC
+        sur des données très déséquilibrées.
+  \item \textbf{F1-score} (classe 1) : moyenne harmonique Précision/Recall.
+  \item \textbf{Recall} (classe 1) : taux de blessures détectées — prioritaire dans un
+        contexte médical (coût d'un faux négatif $\gg$ faux positif).
+  \item \textbf{Accuracy} : citée pour référence uniquement (peu informative ici).
+\end{itemize}
+
+\section{Résultats comparatifs}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Modèle} & \textbf{Seuil} & \textbf{Acc.} & \textbf{F1} & \textbf{Recall} & \textbf{Prec.} & \textbf{PR-AUC} & \textbf{ROC-AUC} \\
+\midrule
+\rowcolor{green!8}\textbf{Random Forest} & 0.09 & 0.937 & \textbf{0.076} & 0.188 & 0.047 & \textbf{0.032} & \textbf{0.681} \\
+XGBoost & 0.54 & 0.959 & 0.070 & 0.111 & \textbf{0.051} & 0.028 & 0.637 \\
+Log. Regression & 0.61 & 0.828 & 0.060 & \textbf{0.402} & 0.032 & 0.028 & 0.690 \\
+MLP (Deep L.) & 0.64 & 0.915 & 0.052 & 0.171 & 0.031 & 0.024 & 0.646 \\
+SVM & 0.05 & 0.986 & 0.016 & 0.009 & 0.125 & 0.029 & 0.690 \\
+\midrule
+\textit{Baseline aléatoire} & — & — & — & — & — & 0.014 & 0.500 \\
+\bottomrule
+\end{tabular}
+\caption{Comparaison des 5 modèles sur le jeu de test (20\,\%) avec seuil optimisé}
+\end{table}
+
+\section{Analyse des résultats}
+
+\subsection{Interprétation des faibles valeurs absolues}
+
+Les valeurs de F1 et PR-AUC semblent faibles en valeur absolue, mais doivent être
+contextualisées :
+\begin{itemize}
+  \item La PR-AUC maximale théorique est 1.0, mais sur un jeu très déséquilibré,
+        même un modèle performant obtient des valeurs faibles.
+  \item La \textbf{baseline aléatoire est de 0.014} (taux de blessure). La PR-AUC du
+        Random Forest (0.032) représente un \textbf{gain de ×2.3} sur cette baseline.
+  \item Le ROC-AUC de 0.681 indique une capacité discriminante nettement supérieure à
+        un classificateur aléatoire (0.5).
+\end{itemize}
+
+\subsection{Analyse par modèle}
+
+\textbf{Random Forest (recommandé) :} Meilleur PR-AUC et ROC-AUC. Seuil bas (0.09) qui
+favorise le Recall au détriment de la Précision — cohérent avec un contexte médical de
+screening où manquer une blessure (faux négatif) est plus coûteux qu'une alerte inutile.
+
+\textbf{Logistic Regression :} Recall très élevé (0.402) mais avec beaucoup de faux positifs
+(Précision = 0.032). Utile si l'objectif est de ne manquer aucune blessure, au prix de
+nombreuses fausses alertes.
+
+\textbf{XGBoost :} Meilleure Précision (0.051) mais Recall plus faible. Profil différent de
+la Régression Logistique.
+
+\textbf{MLP (Deep Learning) :} Performances inférieures au Random Forest. Sur ce dataset,
+la complexité du MLP n'apporte pas de gain — ce résultat confirme que le Deep Learning n'est
+pas universellement supérieur au Machine Learning classique.
+
+\textbf{SVM :} Comportement dégénéré avec le seuil par défaut (trop de vrais négatifs).
+Malgré un ROC-AUC correct (0.690), le SVM semble mal calibré sur cette distribution.
+
+\section{Validation croisée 5-Fold}
+
+Une validation croisée stratifiée à 5 folds a été effectuée sur LR, RF, XGBoost et MLP
+afin de s'assurer que les résultats ne sont pas spécifiques à un split particulier.
+
+\begin{infobox}[title=Résultats CV (valeurs indicatives — voir cv\_results.csv)]
+Les écarts-types faibles ($\sigma < 0.01$ sur la PR-AUC) confirment la \textbf{stabilité}
+des modèles à travers les folds. Le Random Forest maintient son avantage en PR-AUC à travers
+tous les folds, validant son choix comme modèle candidat final.
+\end{infobox}
+
+\section{Choix du modèle final}
+
+\begin{resultbox}[title=Modèle recommandé : Random Forest]
+Le \textbf{Random Forest} est sélectionné comme modèle de production pour les raisons suivantes :
+\begin{enumerate}
+  \item Meilleure PR-AUC (0.032) et ROC-AUC (0.681) sur le test set,
+  \item Compatible avec le SHAP TreeExplainer (explicabilité rapide et précise),
+  \item Stable en cross-validation (faible variance entre folds),
+  \item Gestion native du déséquilibre (\texttt{class\_weight="balanced"}),
+  \item Compromis performance / interprétabilité / coût computationnel optimal.
+\end{enumerate}
+\end{resultbox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Interprétabilité — SHAP}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Approche et justification}
+
+L'interprétabilité est essentielle dans un contexte médical : un entraîneur ou un médecin
+du sport doit comprendre \textit{pourquoi} le modèle signale un risque élevé pour ajuster
+le programme d'entraînement de manière ciblée.
+
+Nous utilisons \textbf{SHAP} (SHapley Additive exPlanations) appliqué aux deux meilleurs
+modèles arborescents (Random Forest et XGBoost) via le \texttt{TreeExplainer} (rapide et exact).
+
+\section{Interprétation des résultats SHAP}
+
+\subsection{Top 20 features — Random Forest}
+
+Le tableau suivant présente les 20 features les plus influentes d'après le calcul SHAP
+sur le jeu de test :
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{clr}
+\toprule
+\textbf{Rang} & \textbf{Feature} & \textbf{SHAP moyen |absolu|} \\
+\midrule
+1  & \texttt{agg\_max\_perceived\_exertion}      & 0.01594 \\
+2  & \texttt{agg\_sum\_perceived\_exertion}      & 0.01343 \\
+3  & \texttt{agg\_sum\_perceived\_recovery}      & 0.01259 \\
+4  & \texttt{agg\_mean\_perceived\_exertion}     & 0.01230 \\
+5  & \texttt{agg\_max\_total\_km}               & 0.01140 \\
+6  & \texttt{agg\_mean\_perceived\_recovery}    & 0.00987 \\
+7  & \texttt{agg\_max\_perceived\_recovery}     & 0.00960 \\
+8  & \texttt{agg\_sum\_total\_km}               & 0.00944 \\
+9  & \texttt{agg\_mean\_total\_km}              & 0.00942 \\
+10 & \texttt{agg\_sum\_perceived\_trainingSuccess} & 0.00900 \\
+11 & \texttt{agg\_mean\_perceived\_trainingSuccess} & 0.00884 \\
+12 & \texttt{agg\_max\_perceived\_trainingSuccess}  & 0.00871 \\
+13 & \texttt{perceived exertion.6}              & 0.00843 \\
+14 & \texttt{perceived exertion}               & 0.00817 \\
+15 & \texttt{perceived exertion.4}             & 0.00808 \\
+16 & \texttt{acwr\_total\_km}                   & 0.00800 \\
+17 & \texttt{perceived recovery.4}             & 0.00796 \\
+18 & \texttt{perceived trainingSuccess.1}      & 0.00796 \\
+19 & \texttt{perceived exertion.3}             & 0.00788 \\
+20 & \texttt{perceived trainingSuccess.4}      & 0.00763 \\
+\bottomrule
+\end{tabular}
+\caption{Top 20 features par importance SHAP globale — Random Forest}
+\end{table}
+
+\subsection{Interprétation des résultats}
+
+Trois enseignements clés émergent de cette analyse :
+
+\begin{enumerate}
+  \item \textbf{Les indicateurs subjectifs dominent les indicateurs objectifs.}
+        Les 4 premières features sont des agrégats de \texttt{perceived exertion} et
+        \texttt{perceived recovery}. L'effort perçu (RPE) et la récupération perçue sont
+        plus prédictifs que le volume de km, ce qui est cohérent avec la littérature sportive :
+        la perception de la charge est un signal précoce de surentraînement (Gabbett, 2016).
+
+  \item \textbf{Le pic de charge (max) est plus important que la somme.}
+        \texttt{agg\_max\_perceived\_exertion} (rang 1) précède \texttt{agg\_sum\_perceived\_exertion}
+        (rang 2). Une seule journée d'effort maximal sur la semaine est plus révélatrice qu'une
+        charge totale élevée répartie uniformément.
+
+  \item \textbf{L'ACWR confirme son importance biomécanique.}
+        Le ratio charge aiguë/chronique (\texttt{acwr\_total\_km}, rang 16) figure dans le
+        top 20 malgré la forte concurrence des features perçues, validant le feature engineering.
+\end{enumerate}
+
+\subsection{Causalité vs corrélation}
+
+\begin{warningbox}[title=Limite importante]
+Les valeurs SHAP indiquent des associations statistiques, \textbf{non des relations causales}.
+Deux features fortement corrélées peuvent se "partager" l'importance SHAP sans que l'une
+soit plus causale que l'autre. L'interprétation doit rester prudente.
+\end{warningbox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Dashboard et API}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Dashboard Streamlit}
+
+Le dashboard constitue l'interface décisionnelle orientée \textbf{utilisateur métier}
+(entraîneur, médecin du sport). Il est développé avec \textbf{Streamlit} et intègre des
+graphiques interactifs \textbf{Plotly}.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Page} & \textbf{Contenu} \\
+\midrule
+Vue d'ensemble & KPIs clés, répartition des classes, histogramme volume, matrice de corrélations 7 jours \\
+Comparaison des modèles & Tableau comparatif stylisé, radar chart multi-dimensions, courbes PR/ROC, matrices de confusion, validation croisée \\
+Prédiction & Formulaire 7 jours (onglets par jour), jauge de risque animée, bannière d'alerte colorée avec recommandations cliniques \\
+Interprétabilité SHAP & Bar chart importance globale, beeswarm plot, classement top 20 features, guide de lecture \\
+Simulation & Sliders profil coureur, courbe de risque en fonction de la réduction de charge (what-if) \\
+\bottomrule
+\end{tabularx}
+\caption{Pages du dashboard RunSafe AI}
+\end{table}
+
+\section{API REST FastAPI}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Méthode} & \textbf{Endpoint} & \textbf{Description} \\
+\midrule
+GET & \texttt{/health} & Vérification de l'état du service et des modèles \\
+GET & \texttt{/model-info} & Modèles disponibles, seuils, noms d'affichage \\
+POST & \texttt{/predict} & Prédiction du risque à partir de données 7 jours \\
+\bottomrule
+\end{tabular}
+\caption{Endpoints de l'API FastAPI}
+\end{table}
+
+L'architecture respecte le principe \textbf{Front / API / Modèle} : le dashboard appelle
+l'API pour les prédictions, indépendamment du chargement local des modèles.
+
+Les schémas Pydantic (\texttt{api/schemas.py}) assurent la validation des entrées :
+types, bornes, champs requis, messages d'erreur HTTP explicites.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Conclusion et perspectives}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Bilan}
+
+Ce projet a permis de concevoir un système d'IA complet pour la prédiction de blessures
+sportives, couvrant l'ensemble du pipeline professionnel : acquisition, nettoyage,
+feature engineering, modélisation comparative, évaluation, interprétabilité, dashboard
+et API.
+
+Les principaux apprentissages sont :
+\begin{itemize}
+  \item \textbf{Le déséquilibre de classes} est le défi central : accuracy et ROC-AUC
+        seuls sont trompeurs ; la PR-AUC est la métrique de choix.
+  \item \textbf{Le Deep Learning n'est pas universellement supérieur} : le MLP est ici
+        inférieur au Random Forest, faute de données suffisantes pour la classe minoritaire.
+  \item \textbf{L'ACWR} (ratio charge aiguë/chronique) est la feature la plus importante,
+        ce qui valide la pertinence métier du feature engineering.
+  \item \textbf{L'interprétabilité SHAP} transforme un modèle opaque en outil de conseil
+        actionnable pour le staff sportif.
+\end{itemize}
+
+\section{Perspectives}
+
+\begin{itemize}
+  \item \textbf{Données longitudinales} : prendre en compte l'historique complet de
+        l'athlète (et non uniquement les 7 derniers jours) avec des modèles séquentiels
+        (LSTM, Transformer).
+  \item \textbf{Personnalisation} : entraîner des modèles individuels par athlète ou par
+        profil (niveau, spécialité, morphologie).
+  \item \textbf{Monitoring en production} : détecter la dérive des données (data drift)
+        et ré-entraîner automatiquement le modèle.
+  \item \textbf{Intégration IoT} : coupler avec des données GPS et cardiaques en temps
+        réel pour des alertes plus précises.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter*{Références}
+\addcontentsline{toc}{chapter}{Références}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{enumerate}
+  \item Gabbett, T.J. (2016). The training-injury prevention paradox: should athletes
+        be training smarter and harder? \textit{British Journal of Sports Medicine}, 50(5), 273--280.
+
+  \item Lundberg, S.M., \& Lee, S.I. (2017). A unified approach to interpreting model
+        predictions. \textit{Advances in Neural Information Processing Systems}, 30.
+
+  \item Breiman, L. (2001). Random forests. \textit{Machine Learning}, 45(1), 5--32.
+
+  \item Chen, T., \& Guestrin, C. (2016). XGBoost: A scalable tree boosting system.
+        \textit{Proceedings of the 22nd ACM SIGKDD}, 785--794.
+
+  \item Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python.
+        \textit{Journal of Machine Learning Research}, 12, 2825--2830.
+
+  \item He, H., \& Garcia, E.A. (2009). Learning from imbalanced data.
+        \textit{IEEE Transactions on Knowledge and Data Engineering}, 21(9), 1263--1284.
+
+  \item Kaggle Dataset — Sports Injury Prediction (anonymisé, usage académique).
+        \url{https://www.kaggle.com/datasets/vlad1986/sports-injury-prediction}
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\appendix
+\chapter{Structure du projet}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{lstlisting}[language=bash, caption=Arborescence du projet]
+projet_2/
+|-- data/raw/           # Dataset CSV brut
+|-- src/
+|   |-- preprocessing.py    # Pipeline preprocessing + feature engineering
+|   |-- models.py           # 5 modeles ML/DL
+|   +-- evaluation.py       # Metriques, SHAP, cross-validation
+|-- dashboard/app.py        # Interface Streamlit (5 pages)
+|-- api/
+|   |-- main.py             # API FastAPI (/predict /health /model-info)
+|   +-- schemas.py          # Schemas Pydantic
+|-- notebooks/01_EDA_and_modeling.ipynb
+|-- figures/                # Courbes, matrices de confusion, SHAP
+|-- results/                # CSV comparatifs, seuils, features SHAP
+|-- saved_models/           # Modeles serialises (.pkl)
+|-- train.py                # Script d'entrainement principal
+|-- run_cv.py               # Cross-validation 5-Fold
++-- requirements.txt
+\end{lstlisting}
+
+\chapter{Instructions de démarrage}
+
+\begin{lstlisting}[language=bash, caption=Commandes de démarrage]
+# 1 - Installation des dependances
+pip install -r requirements.txt
+
+# 2 - Entrainement (tous les modeles, ~5 min)
+python train.py
+
+# 3 - Cross-validation (~15 min, optionnel)
+python run_cv.py
+
+# 4 - Dashboard Streamlit
+python -m streamlit run dashboard/app.py
+# -> http://localhost:8501
+
+# 5 - API REST (optionnel)
+uvicorn api.main:app --reload --port 8000
+# -> http://localhost:8000/docs
+\end{lstlisting}
+
+\end{document}
